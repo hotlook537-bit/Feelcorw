@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "804307875684",
+    "project_id": "lulugram-585f7",
+    "storage_bucket": "lulugram-585f7.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:804307875684:android:270fdb13156875eacf6c71",
+        "android_client_info": {
+          "package_name": "com.aistudio.lulugram.social"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCcjPvYE0auafsGG4fqh4T_J-4160VZNOE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

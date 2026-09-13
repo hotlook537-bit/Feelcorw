@@ -1,0 +1,6 @@
+{
+  "name": "Lulugram",
+  "description": "Lulugram is a modern social media app featuring feeds, stories, reels, real-time messaging, and profile management.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
