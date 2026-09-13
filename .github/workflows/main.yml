@@ -19,33 +19,21 @@ jobs:
       with:
         java-version: '21'
         distribution: 'temurin'
-        cache: gradle
 
-    # Ye step automatically check karega ki gradlew file kis folder me hai
-    - name: Grant Execute Permission for Gradle Wrapper
-      run: |
-        GRADLEW_PATH=$(find . -name gradlew -print -quit)
-        if [ -z "$GRADLEW_PATH" ]; then
-          echo "ERROR: gradlew file poori repository me kahi nahi mili!"
-          exit 1
-        fi
-        PROJECT_DIR=$(dirname "$GRADLEW_PATH")
-        echo "PROJECT_DIR=$PROJECT_DIR" >> $GITHUB_ENV
-        chmod +x "$GRADLEW_PATH"
+    # Agar repository me gradlew nahi hai, to ye workflow khud ek naya wrapper generate karega
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@v4
 
-    # Firebase json create karega jahan gradlew file hai uske app folder me
+    # Firebase json create karega app folder ke andar
     - name: Recreate google-services.json from Secret
       run: |
-        mkdir -p "${{ env.PROJECT_DIR }}/app"
-        echo '${{ secrets.GOOGLE_SERVICES_JSON }}' > "${{ env.PROJECT_DIR }}/app/google-services.json"
+        mkdir -p app
+        echo '${{ secrets.GOOGLE_SERVICES_JSON }}' > app/google-services.json
 
-    # Sahi folder ke andar jaakar APK build karega
+    # Global gradle command ka use karke build karega (bina ./gradlew ke)
     - name: Build Debug APK
-      run: |
-        cd "${{ env.PROJECT_DIR }}"
-        ./gradlew assembleDebug --stacktrace
+      run: gradle assembleDebug --stacktrace
 
-    # Built APK ko upload karega
     - name: Upload Build Artifact (APK)
       uses: actions/upload-artifact@v4
       with:
