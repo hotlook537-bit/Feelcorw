@@ -2,7 +2,7 @@ name: Build Lulugram APK
 
 on:
   push:
-    branches: [ "main" ] # Jab aap main branch par push karenge tab chalega
+    branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
 
@@ -17,22 +17,37 @@ jobs:
     - name: Set up JDK 21
       uses: actions/setup-java@v4
       with:
-        java-version: '21' # Aapki app build.gradle.kts ke mutabik Java 21 required hai
+        java-version: '21'
         distribution: 'temurin'
         cache: gradle
 
+    # Ye step automatically check karega ki gradlew file kis folder me hai
     - name: Grant Execute Permission for Gradle Wrapper
-      run: chmod +x gradlew
+      run: |
+        GRADLEW_PATH=$(find . -name gradlew -print -quit)
+        if [ -z "$GRADLEW_PATH" ]; then
+          echo "ERROR: gradlew file poori repository me kahi nahi mili!"
+          exit 1
+        fi
+        PROJECT_DIR=$(dirname "$GRADLEW_PATH")
+        echo "PROJECT_DIR=$PROJECT_DIR" >> $GITHUB_ENV
+        chmod +x "$GRADLEW_PATH"
 
+    # Firebase json create karega jahan gradlew file hai uske app folder me
     - name: Recreate google-services.json from Secret
       run: |
-        echo '${{ secrets.GOOGLE_SERVICES_JSON }}' > app/google-services.json
+        mkdir -p "${{ env.PROJECT_DIR }}/app"
+        echo '${{ secrets.GOOGLE_SERVICES_JSON }}' > "${{ env.PROJECT_DIR }}/app/google-services.json"
 
+    # Sahi folder ke andar jaakar APK build karega
     - name: Build Debug APK
-      run: ./gradlew assembleDebug --stacktrace
+      run: |
+        cd "${{ env.PROJECT_DIR }}"
+        ./gradlew assembleDebug --stacktrace
 
+    # Built APK ko upload karega
     - name: Upload Build Artifact (APK)
       uses: actions/upload-artifact@v4
       with:
         name: lulugram-debug-apk
-        path: app/build/outputs/apk/debug/app-debug.apk
+        path: "**/build/outputs/apk/debug/app-debug.apk"
